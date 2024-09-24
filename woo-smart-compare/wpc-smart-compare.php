@@ -3,21 +3,21 @@
 Plugin Name: WPC Smart Compare for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: Smart products compare for WooCommerce.
-Version: 6.2.6
+Version: 6.2.9
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: woo-smart-compare
 Domain Path: /languages/
 Requires Plugins: woocommerce
 Requires at least: 4.0
-Tested up to: 6.5
+Tested up to: 6.6
 WC requires at least: 3.0
-WC tested up to: 8.9
+WC tested up to: 9.3
 */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WOOSC_VERSION' ) && define( 'WOOSC_VERSION', '6.2.6' );
+! defined( 'WOOSC_VERSION' ) && define( 'WOOSC_VERSION', '6.2.9' );
 ! defined( 'WOOSC_LITE' ) && define( 'WOOSC_LITE', __FILE__ );
 ! defined( 'WOOSC_FILE' ) && define( 'WOOSC_FILE', __FILE__ );
 ! defined( 'WOOSC_URI' ) && define( 'WOOSC_URI', plugin_dir_url( __FILE__ ) );
@@ -78,17 +78,14 @@ if ( ! function_exists( 'woosc_init' ) ) {
 					// update product
 					add_action( 'save_post', [ $this, 'save_post' ], 10, 2 );
 
-					// ajax search
-					add_action( 'wp_ajax_woosc_search', [ $this, 'ajax_search' ] );
-					add_action( 'wp_ajax_nopriv_woosc_search', [ $this, 'ajax_search' ] );
+					// frontend ajax search
+					add_action( 'wc_ajax_woosc_search', [ $this, 'ajax_search' ] );
 
-					// ajax share
-					add_action( 'wp_ajax_woosc_share', [ $this, 'ajax_share' ] );
-					add_action( 'wp_ajax_nopriv_woosc_share', [ $this, 'ajax_share' ] );
+					// frontend ajax share
+					add_action( 'wc_ajax_woosc_share', [ $this, 'ajax_share' ] );
 
-					// ajax load data
-					add_action( 'wp_ajax_woosc_load_data', [ $this, 'ajax_load_data' ] );
-					add_action( 'wp_ajax_nopriv_woosc_load_data', [ $this, 'ajax_load_data' ] );
+					// frontend ajax load
+					add_action( 'wc_ajax_woosc_load', [ $this, 'ajax_load' ] );
 
 					// add to compare
 					add_action( 'template_redirect', [ $this, 'add_by_link' ] );
@@ -97,7 +94,7 @@ if ( ! function_exists( 'woosc_init' ) ) {
 					add_action( 'admin_init', [ $this, 'register_settings' ] );
 					add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 
-					// ajax add field
+					// backend ajax add field
 					add_action( 'wp_ajax_woosc_add_field', [ $this, 'ajax_add_field' ] );
 
 					// settings link
@@ -288,13 +285,14 @@ if ( ! function_exists( 'woosc_init' ) ) {
 						'jquery-ui-sortable'
 					], WOOSC_VERSION, true );
 					wp_localize_script( 'woosc-frontend', 'woosc_vars', apply_filters( 'woosc_vars', [
-							'ajax_url'           => admin_url( 'admin-ajax.php' ),
+							'wc_ajax_url'        => WC_AJAX::get_endpoint( '%%endpoint%%' ),
 							'nonce'              => wp_create_nonce( 'woosc-security' ),
 							'hash'               => self::get_setting( 'hash', '6' ),
 							'user_id'            => self::get_user_key(),
 							'page_url'           => self::get_page_url(),
 							'open_button'        => esc_attr( self::get_setting( 'open_button', '' ) ),
 							'hide_empty_row'     => apply_filters( 'woosc_hide_empty_row', 'yes' ),
+							'reload_count'       => self::get_setting( 'reload_count', 'no' ),
 							'variations'         => self::get_setting( 'variations', 'yes' ),
 							'open_button_action' => self::get_setting( 'open_button_action', 'open_popup' ),
 							'menu_action'        => self::get_setting( 'menu_action', 'open_popup' ),
@@ -434,6 +432,7 @@ if ( ! function_exists( 'woosc_init' ) ) {
 								$adding                  = self::get_setting( 'adding', 'prepend' );
 								$hide_checkout           = self::get_setting( 'hide_checkout', 'yes' );
 								$hide_empty              = self::get_setting( 'hide_empty', 'no' );
+								$reload_count            = self::get_setting( 'reload_count', 'no' );
 								$variations              = self::get_setting( 'variations', 'yes' );
 								$button_type             = self::get_setting( 'button_type', 'button' );
 								$button_icon             = self::get_setting( 'button_icon', 'no' );
@@ -541,6 +540,16 @@ if ( ! function_exists( 'woosc_init' ) ) {
 													'option_none_value' => '',
 												] ); ?>
                                                 <span class="description"><?php printf( /* translators: shortcode */ esc_html__( 'Add shortcode %s to display the comparison table on this page.', 'woo-smart-compare' ), '<code>[woosc_list]</code>' ); ?></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th><?php esc_html_e( 'Reload the count', 'woo-smart-compare' ); ?></th>
+                                            <td>
+                                                <label> <select name="woosc_settings[reload_count]">
+                                                        <option value="yes" <?php selected( $reload_count, 'yes' ); ?>><?php esc_html_e( 'Yes', 'woo-smart-compare' ); ?></option>
+                                                        <option value="no" <?php selected( $reload_count, 'no' ); ?>><?php esc_html_e( 'No', 'woo-smart-compare' ); ?></option>
+                                                    </select> </label>
+                                                <span class="description"><?php esc_html_e( 'Reload the count when opening the page?', 'woo-smart-compare' ); ?></span>
                                             </td>
                                         </tr>
                                         <tr class="heading">
@@ -2248,7 +2257,7 @@ if ( ! function_exists( 'woosc_init' ) ) {
 					wp_die();
 				}
 
-				function ajax_load_data() {
+				function ajax_load() {
 					if ( ! apply_filters( 'woosc_disable_security_check', false, 'load_data' ) ) {
 						if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'woosc-security' ) ) {
 							die( 'Permissions check failed!' );
@@ -2268,6 +2277,10 @@ if ( ! function_exists( 'woosc_init' ) ) {
 
 					if ( isset( $_REQUEST['get_data'] ) && ( sanitize_key( $_REQUEST['get_data'] ) === 'sidebar' ) ) {
 						$data['sidebar'] = self::get_sidebar();
+					}
+
+					if ( isset( $_REQUEST['get_data'] ) && ( sanitize_key( $_REQUEST['get_data'] ) === 'count' ) ) {
+						$data['count'] = self::get_count();
 					}
 
 					wp_send_json( $data );
@@ -2672,7 +2685,7 @@ if ( ! function_exists( 'woosc_init' ) ) {
 				}
 
 				function wcml_multi_currency( $ajax_actions ) {
-					$ajax_actions[] = 'woosc_load_data';
+					$ajax_actions[] = 'woosc_load';
 
 					return $ajax_actions;
 				}

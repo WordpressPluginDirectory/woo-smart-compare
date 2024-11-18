@@ -4,8 +4,8 @@ Donate link: https://wpclever.net
 Tags: woocommerce, wpc, compare, comparison
 Requires at least: 4.0
 Tested up to: 6.7
-Version: 6.4.0
-Stable tag: 6.4.0
+Version: 6.4.1
+Stable tag: 6.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,9 @@ Example:
 `echo do_shortcode('[woosc id="99"]');`
 
 == Changelog ==
+
+= 6.4.1 =
+* Fixed: Minor CSS/JS issues
 
 = 6.4.0 =
 * Added: Smart filter by a selected taxonomy (category, color, size, etc.)

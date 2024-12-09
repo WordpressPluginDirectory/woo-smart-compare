@@ -3,7 +3,7 @@
 Plugin Name: WPC Smart Compare for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: Smart products compare for WooCommerce.
-Version: 6.4.1
+Version: 6.4.2
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: woo-smart-compare
@@ -19,7 +19,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WOOSC_VERSION' ) && define( 'WOOSC_VERSION', '6.4.1' );
+! defined( 'WOOSC_VERSION' ) && define( 'WOOSC_VERSION', '6.4.2' );
 ! defined( 'WOOSC_LITE' ) && define( 'WOOSC_LITE', __FILE__ );
 ! defined( 'WOOSC_FILE' ) && define( 'WOOSC_FILE', __FILE__ );
 ! defined( 'WOOSC_URI' ) && define( 'WOOSC_URI', plugin_dir_url( __FILE__ ) );
@@ -38,9 +38,6 @@ if ( ! function_exists( 'woosc_init' ) ) {
 	add_action( 'plugins_loaded', 'woosc_init', 11 );
 
 	function woosc_init() {
-		// load text-domain
-		load_plugin_textdomain( 'woo-smart-compare', false, basename( __DIR__ ) . '/languages/' );
-
 		if ( ! function_exists( 'WC' ) || ! version_compare( WC()->version, '3.0', '>=' ) ) {
 			add_action( 'admin_notices', 'woosc_notice_wc' );
 
@@ -153,6 +150,9 @@ if ( ! function_exists( 'woosc_init' ) ) {
 				}
 
 				function init() {
+					// load text-domain
+					load_plugin_textdomain( 'woo-smart-compare', false, basename( WOOSC_DIR ) . '/languages/' );
+
 					// fields
 					self::$fields = apply_filters( 'woosc_fields', [
 						'image'        => self::localization( 'field_image', esc_html__( 'Image', 'woo-smart-compare' ) ),

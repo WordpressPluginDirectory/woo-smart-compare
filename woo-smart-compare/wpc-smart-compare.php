@@ -3,23 +3,23 @@
 Plugin Name: WPC Smart Compare for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: Smart products compare for WooCommerce.
-Version: 6.4.4
+Version: 6.4.9
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: woo-smart-compare
 Domain Path: /languages/
 Requires Plugins: woocommerce
 Requires at least: 4.0
-Tested up to: 6.7
+Tested up to: 6.8
 WC requires at least: 3.0
-WC tested up to: 9.6
+WC tested up to: 10.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WOOSC_VERSION' ) && define( 'WOOSC_VERSION', '6.4.4' );
+! defined( 'WOOSC_VERSION' ) && define( 'WOOSC_VERSION', '6.4.9' );
 ! defined( 'WOOSC_LITE' ) && define( 'WOOSC_LITE', __FILE__ );
 ! defined( 'WOOSC_FILE' ) && define( 'WOOSC_FILE', __FILE__ );
 ! defined( 'WOOSC_URI' ) && define( 'WOOSC_URI', plugin_dir_url( __FILE__ ) );
@@ -402,19 +402,27 @@ if ( ! function_exists( 'woosc_init' ) ) {
 					$active_tab = sanitize_key( $_GET['tab'] ?? 'settings' );
 					?>
                     <div class="wpclever_settings_page wrap">
-                        <h1 class="wpclever_settings_page_title"><?php echo esc_html__( 'WPC Smart Compare', 'woo-smart-compare' ) . ' ' . esc_html( WOOSC_VERSION ) . ' ' . ( defined( 'WOOSC_PREMIUM' ) ? '<span class="premium" style="display: none">' . esc_html__( 'Premium', 'woo-smart-compare' ) . '</span>' : '' ); ?></h1>
-                        <div class="wpclever_settings_page_desc about-text">
-                            <p>
-								<?php printf( /* translators: stars */ esc_html__( 'Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating.', 'woo-smart-compare' ), '<span style="color:#ffb900">&#9733;&#9733;&#9733;&#9733;&#9733;</span>' ); ?>
-                                <br/>
-                                <a href="<?php echo esc_url( WOOSC_REVIEWS ); ?>"
-                                   target="_blank"><?php esc_html_e( 'Reviews', 'woo-smart-compare' ); ?></a> |
-                                <a href="<?php echo esc_url( WOOSC_CHANGELOG ); ?>"
-                                   target="_blank"><?php esc_html_e( 'Changelog', 'woo-smart-compare' ); ?></a> |
-                                <a href="<?php echo esc_url( WOOSC_DISCUSSION ); ?>"
-                                   target="_blank"><?php esc_html_e( 'Discussion', 'woo-smart-compare' ); ?></a>
-                            </p>
+                        <div class="wpclever_settings_page_header">
+                            <a class="wpclever_settings_page_header_logo" href="https://wpclever.net/"
+                               target="_blank" title="Visit wpclever.net"></a>
+                            <div class="wpclever_settings_page_header_text">
+                                <div class="wpclever_settings_page_title"><?php echo esc_html__( 'WPC Smart Compare', 'woo-smart-compare' ) . ' ' . esc_html( WOOSC_VERSION ) . ' ' . ( defined( 'WOOSC_PREMIUM' ) ? '<span class="premium" style="display: none">' . esc_html__( 'Premium', 'woo-smart-compare' ) . '</span>' : '' ); ?></div>
+                                <div class="wpclever_settings_page_desc about-text">
+                                    <p>
+										<?php printf( /* translators: stars */ esc_html__( 'Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating.', 'woo-smart-compare' ), '<span style="color:#ffb900">&#9733;&#9733;&#9733;&#9733;&#9733;</span>' ); ?>
+                                        <br/>
+                                        <a href="<?php echo esc_url( WOOSC_REVIEWS ); ?>"
+                                           target="_blank"><?php esc_html_e( 'Reviews', 'woo-smart-compare' ); ?></a> |
+                                        <a href="<?php echo esc_url( WOOSC_CHANGELOG ); ?>"
+                                           target="_blank"><?php esc_html_e( 'Changelog', 'woo-smart-compare' ); ?></a>
+                                        |
+                                        <a href="<?php echo esc_url( WOOSC_DISCUSSION ); ?>"
+                                           target="_blank"><?php esc_html_e( 'Discussion', 'woo-smart-compare' ); ?></a>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
+                        <h2></h2>
 						<?php if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] ) {
 							flush_rewrite_rules();
 							?>
@@ -898,7 +906,7 @@ if ( ! function_exists( 'woosc_init' ) ) {
 													echo '<select name="woosc_settings[image_size]">';
 
 													foreach ( $image_sizes as $image_size_name => $image_size_data ) {
-														echo '<option value="' . esc_attr( $image_size_name ) . '" ' . ( $image_size_name === $image_size ? 'selected' : '' ) . '>' . esc_attr( $image_size_name ) . ( ! empty( $image_size_data['width'] ) ? ' ' . $image_size_data['width'] . '&times;' . $image_size_data['height'] : '' ) . ( $image_size_data['crop'] ? ' (cropped)' : '' ) . '</option>';
+														echo '<option value="' . esc_attr( $image_size_name ) . '" ' . ( $image_size_name === $image_size ? 'selected' : '' ) . '>' . esc_html( $image_size_name . ( ! empty( $image_size_data['width'] ) ? ' ' . $image_size_data['width'] . '&times;' . $image_size_data['height'] : '' ) . ( $image_size_data['crop'] ? ' (cropped)' : '' ) ) . '</option>';
 													}
 
 													echo '</select>';
@@ -1099,9 +1107,9 @@ if ( ! function_exists( 'woosc_init' ) ) {
                                                 <label>
                                                     <input type="text" class="woosc_color_picker"
                                                            name="woosc_settings[bar_bg_color]"
-                                                           value="<?php echo self::get_setting( 'bar_bg_color', $bar_bg_color_default ); ?>"/>
+                                                           value="<?php echo esc_attr( self::get_setting( 'bar_bg_color', $bar_bg_color_default ) ); ?>"/>
                                                 </label>
-                                                <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the background color for the comparison bar, default %s', 'woo-smart-compare' ), '<code>' . $bar_bg_color_default . '</code>' ); ?></span>
+                                                <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the background color for the comparison bar, default %s', 'woo-smart-compare' ), '<code>' . esc_html( $bar_bg_color_default ) . '</code>' ); ?></span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -1111,9 +1119,9 @@ if ( ! function_exists( 'woosc_init' ) ) {
                                                 <label>
                                                     <input type="text" class="woosc_color_picker"
                                                            name="woosc_settings[bar_btn_color]"
-                                                           value="<?php echo self::get_setting( 'bar_btn_color', $bar_btn_color_default ); ?>"/>
+                                                           value="<?php echo esc_attr( self::get_setting( 'bar_btn_color', $bar_btn_color_default ) ); ?>"/>
                                                 </label>
-                                                <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the color for the button on comparison bar, default %s', 'woo-smart-compare' ), '<code>' . $bar_btn_color_default . '</code>' ); ?></span>
+                                                <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the color for the button on comparison bar, default %s', 'woo-smart-compare' ), '<code>' . esc_html( $bar_btn_color_default ) . '</code>' ); ?></span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -1298,7 +1306,7 @@ if ( ! function_exists( 'woosc_init' ) ) {
 													$saved_menus = self::get_setting( 'menus', [] );
 
 													foreach ( $nav_menus as $nav_id => $nav_name ) {
-														echo '<li><label><input type="checkbox" name="woosc_settings[menus][]" value="' . $nav_id . '" ' . ( is_array( $saved_menus ) && in_array( $nav_id, $saved_menus ) ? 'checked' : '' ) . '/> ' . $nav_name . '</label></li>';
+														echo '<li><label><input type="checkbox" name="woosc_settings[menus][]" value="' . esc_attr( $nav_id ) . '" ' . ( is_array( $saved_menus ) && in_array( $nav_id, $saved_menus ) ? 'checked' : '' ) . '/> ' . esc_html( $nav_name ) . '</label></li>';
 													}
 
 													echo '</ul>';
@@ -2393,11 +2401,7 @@ if ( ! function_exists( 'woosc_init' ) ) {
 
 							foreach ( $products_data as $product_id => $product_data ) {
 								if ( $product_data['name'] !== '' ) {
-									if ( isset( $product_data[ $field_key ] ) ) {
-										$field_value = $product_data[ $field_key ];
-									} else {
-										$field_value = '';
-									}
+									$field_value = $product_data[ $field_key ] ?? '';
 
 									$row .= '<td class="' . esc_attr( ! empty( $product_data['filter'] ) ? 'col col-' . implode( ' col-', $product_data['filter'] ) : 'col' ) . '">' . apply_filters( 'woosc_field_value', $field_value, $field_key, $product_id, $product_data ) . '</td>';
 								} else {
@@ -2530,7 +2534,7 @@ if ( ! function_exists( 'woosc_init' ) ) {
 
 						echo '</ul>';
 					} else {
-						echo '<ul><span>' . sprintf( self::localization( 'bar_search_no_results', /* translators: keyword */ esc_html__( 'No results found for "%s"', 'woo-smart-compare' ) ), $keyword ) . '</span></ul>';
+						echo '<ul><span>' . sprintf( self::localization( 'bar_search_no_results', /* translators: keyword */ esc_html__( 'No results found for "%s"', 'woo-smart-compare' ) ), esc_html( $keyword ) ) . '</span></ul>';
 					}
 
 					wp_die();
@@ -2555,8 +2559,8 @@ if ( ! function_exists( 'woosc_init' ) ) {
 								$key = self::generate_key();
 							}
 
-							update_option( 'woosc_hash_' . $hash, $key );
-							update_option( 'woosc_list_' . $key, $products );
+							update_option( 'woosc_hash_' . $hash, $key, false );
+							update_option( 'woosc_list_' . $key, $products, false );
 						}
 
 						$url = self::get_share_url( $key );
@@ -2621,8 +2625,10 @@ if ( ! function_exists( 'woosc_init' ) ) {
 					$output = $product_name = $product_image = '';
 
 					$attrs = shortcode_atts( [
-						'id'   => null,
-						'type' => self::get_setting( 'button_type', 'button' )
+						'id'         => null,
+						'text'       => null,
+						'text_added' => null,
+						'type'       => self::get_setting( 'button_type', 'button' )
 					], $attrs );
 
 					if ( ! $attrs['id'] ) {
@@ -2653,31 +2659,44 @@ if ( ! function_exists( 'woosc_init' ) ) {
 						}
 
 						// button class
-						$class = 'woosc-btn woosc-btn-' . esc_attr( $attrs['id'] ) . ' ' . self::get_setting( 'button_class' );
+						$button_class = 'woosc-btn woosc-btn-' . esc_attr( $attrs['id'] ) . ' ' . self::get_setting( 'button_class' );
 
 						// button text
-						$text = self::localization( 'button', esc_html__( 'Compare', 'woo-smart-compare' ) );
+						$text       = sanitize_text_field( $attrs['text'] ?: self::localization( 'button', esc_html__( 'Compare', 'woo-smart-compare' ) ) );
+						$text_added = sanitize_text_field( $attrs['text_added'] ?: self::localization( 'button_added', esc_html__( 'Compare', 'woo-smart-compare' ) ) );
 
 						if ( ( $button_icon = self::get_setting( 'button_icon', 'no' ) ) !== 'no' ) {
-							$class .= ' woosc-btn-has-icon';
-							$icon  = apply_filters( 'woosc_button_normal_icon', self::get_setting( 'button_normal_icon', 'woosc-icon-1' ) );
+							$button_class .= ' woosc-btn-has-icon';
+							$icon         = apply_filters( 'woosc_button_normal_icon', self::get_setting( 'button_normal_icon', 'woosc-icon-1' ) );
 
 							if ( $button_icon === 'left' ) {
-								$class .= ' woosc-btn-icon-text';
-								$text  = '<span class="woosc-btn-icon ' . esc_attr( $icon ) . '"></span><span class="woosc-btn-text">' . esc_html( $text ) . '</span>';
+								$button_class .= ' woosc-btn-icon-text';
+								$button_text  = '<span class="woosc-btn-icon ' . esc_attr( $icon ) . '"></span><span class="woosc-btn-text">' . esc_html( $text ) . '</span>';
 							} elseif ( $button_icon === 'right' ) {
-								$class .= ' woosc-btn-text-icon';
-								$text  = '<span class="woosc-btn-text">' . esc_html( $text ) . '</span><span class="woosc-btn-icon ' . esc_attr( $icon ) . '"></span>';
+								$button_class .= ' woosc-btn-text-icon';
+								$button_text  = '<span class="woosc-btn-text">' . esc_html( $text ) . '</span><span class="woosc-btn-icon ' . esc_attr( $icon ) . '"></span>';
 							} else {
-								$class .= ' woosc-btn-icon-only';
-								$text  = '<span class="woosc-btn-icon ' . esc_attr( $icon ) . '"></span>';
+								$button_class .= ' woosc-btn-icon-only';
+								$button_text  = '<span class="woosc-btn-icon ' . esc_attr( $icon ) . '"></span>';
 							}
+						} else {
+							$button_text = esc_html( $text );
 						}
 
+						$button_class = apply_filters( 'woosc_button_class', $button_class, $attrs );
+						$button_attrs = apply_filters( 'woosc_button_attrs', [
+							'text'          => esc_html( $text ),
+							'text_added'    => esc_html( $text_added ),
+							'id'            => absint( $attrs['id'] ),
+							'product_id'    => absint( $attrs['id'] ),
+							'product_name'  => esc_html( $product_name ),
+							'product_image' => esc_url( $product_image ),
+						], $attrs );
+
 						if ( $attrs['type'] === 'link' ) {
-							$output = '<a href="' . esc_url( '?add-to-compare=' . $attrs['id'] ) . '" class="' . esc_attr( $class ) . '" data-id="' . esc_attr( $attrs['id'] ) . '" data-product_name="' . esc_attr( $product_name ) . '" data-product_image="' . esc_attr( $product_image ) . '" rel="' . esc_attr( apply_filters( 'woosc_button_rel', 'nofollow' ) ) . '">' . $text . '</a>';
+							$output = '<a href="' . esc_url( '?add-to-compare=' . $attrs['id'] ) . '" class="' . esc_attr( $button_class ) . '" rel="' . esc_attr( apply_filters( 'woosc_button_rel', 'nofollow' ) ) . '" ' . self::data_attributes( $button_attrs ) . '>' . $button_text . '</a>';
 						} else {
-							$output = '<button class="' . esc_attr( $class ) . '" data-id="' . esc_attr( $attrs['id'] ) . '" data-product_name="' . esc_attr( $product_name ) . '" data-product_image="' . esc_attr( $product_image ) . '">' . $text . '</button>';
+							$output = '<button class="' . esc_attr( $button_class ) . '" ' . self::data_attributes( $button_attrs ) . '>' . $button_text . '</button>';
 						}
 					}
 
@@ -3007,7 +3026,8 @@ if ( ! function_exists( 'woosc_init' ) ) {
 					}
 
 					$product_id = $product->get_id();
-					$related    = wc_get_related_products( $product_id );
+					$limit      = apply_filters( 'woosc_quick_table_limit', 5 );
+					$related    = wc_get_related_products( $product_id, $limit );
 
 					if ( empty( $related ) ) {
 						return '';
@@ -3478,6 +3498,16 @@ if ( ! function_exists( 'woosc_init' ) ) {
 					}
 
 					return apply_filters( 'woosc_generate_key', $key );
+				}
+
+				public static function data_attributes( $attrs ) {
+					$attrs_arr = [];
+
+					foreach ( $attrs as $key => $attr ) {
+						$attrs_arr[] = esc_attr( 'data-' . sanitize_title( $key ) ) . '="' . esc_attr( $attr ) . '"';
+					}
+
+					return implode( ' ', $attrs_arr );
 				}
 			}
 
